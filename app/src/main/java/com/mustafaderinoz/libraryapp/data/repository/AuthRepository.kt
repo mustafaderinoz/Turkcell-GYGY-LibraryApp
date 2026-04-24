@@ -14,4 +14,16 @@ class AuthRepository
         else
             throw Exception("Fake login failed")
     }
+
+    //Sign up fonksiyonu
+    suspend fun signUp(email: String, password: String) : Result<Unit> = runCatching {
+        delay(2000)
+
+        val isSuccess = Random.nextBoolean()
+
+        if(isSuccess)
+            Unit
+        else
+            throw Exception("Bir sorun oluştu.")
+    }
 }

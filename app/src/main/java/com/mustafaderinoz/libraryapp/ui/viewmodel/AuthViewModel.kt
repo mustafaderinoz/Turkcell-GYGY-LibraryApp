@@ -32,4 +32,19 @@ class AuthViewModel :ViewModel(){
                 .onFailure { ex -> _authState.value = AuthState.Error(ex.message ?: "Giriş başarısız") }
         }
     }
+    // ✅ Yeni eklendi
+    fun signUp(email: String, password: String) {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            repository
+                .signUp(email, password)
+                .onSuccess { _authState.value = AuthState.Success("student") }
+                .onFailure { ex -> _authState.value = AuthState.Error(ex.message ?: "Kayıt başarısız") }
+        }
+    }
+
+    // Ekranlar arası geçişte state'i sıfırlamak için
+    fun resetState() {
+        _authState.value = AuthState.Idle
+    }
 }
