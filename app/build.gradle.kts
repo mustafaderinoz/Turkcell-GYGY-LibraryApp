@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -16,6 +18,19 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        val localPropertiesFile = rootProject.file("local.properties")
+        val localProperties = Properties().apply {
+            if(localPropertiesFile.exists()) load(localPropertiesFile.inputStream())
+        }
+        buildConfigField(
+            "String",
+            "SUPABASE_URL",
+            "\"${localProperties.getProperty("SUPABASE_URL", "")}\"")
+        buildConfigField(
+            "String",
+            "SUPABASE_ANON_KEY",
+            "\"${localProperties.getProperty("SUPABASE_ANON_KEY", "")}\"")
+
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -36,6 +51,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig=true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"

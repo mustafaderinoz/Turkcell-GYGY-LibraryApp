@@ -13,7 +13,6 @@ import com.mustafaderinoz.libraryapp.ui.viewmodel.AuthViewModel
 @Composable
 fun NavGraph(navController: NavHostController = rememberNavController()) {
 
-    // ViewModel burada tek bir yerde oluşturuluyor → her iki ekran paylaşıyor
     val authViewModel: AuthViewModel = viewModel()
 
     NavHost(navController = navController, startDestination = Screen.Login.route) {

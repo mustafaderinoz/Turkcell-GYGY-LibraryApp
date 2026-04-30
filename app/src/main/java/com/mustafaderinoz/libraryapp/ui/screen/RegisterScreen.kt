@@ -31,14 +31,15 @@ import com.mustafaderinoz.libraryapp.ui.viewmodel.AuthViewModel
 
 @Composable
 fun RegisterScreen(
-    authViewModel: AuthViewModel,          // ViewModel dışarıdan geliyor (NavGraph'tan)
-    onNavigateToLogin: () -> Unit          // Geri navigasyon callback'i
+    authViewModel: AuthViewModel,
+    onNavigateToLogin: () -> Unit
 ) {
     val authState by authViewModel.authState.collectAsState()
 
+    var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var passwordConfirm by remember { mutableStateOf("") }
+    var studentNumber by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -52,6 +53,18 @@ fun RegisterScreen(
         Text("Kayıt Ol", style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Ad Soyad
+        OutlinedTextField(
+            enabled = authState !is AuthState.Loading,
+            modifier = Modifier.fillMaxWidth(),
+            value = fullName,
+            label = { Text("Ad Soyad") },
+            onValueChange = { fullName = it },
+            singleLine = true
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // E-posta
         OutlinedTextField(
             enabled = authState !is AuthState.Loading,
             modifier = Modifier.fillMaxWidth(),
@@ -63,6 +76,7 @@ fun RegisterScreen(
         )
         Spacer(modifier = Modifier.height(10.dp))
 
+        // Şifre
         OutlinedTextField(
             enabled = authState !is AuthState.Loading,
             modifier = Modifier.fillMaxWidth(),
@@ -75,15 +89,15 @@ fun RegisterScreen(
         )
         Spacer(modifier = Modifier.height(10.dp))
 
+        // Öğrenci No (opsiyonel)
         OutlinedTextField(
             enabled = authState !is AuthState.Loading,
             modifier = Modifier.fillMaxWidth(),
-            value = passwordConfirm,
-            label = { Text("Şifre Tekrar") },
-            onValueChange = { passwordConfirm = it },
+            value = studentNumber,
+            label = { Text("Öğrenci No (opsiyonel)") },
+            onValueChange = { studentNumber = it },
             singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            visualTransformation = PasswordVisualTransformation()
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -98,9 +112,11 @@ fun RegisterScreen(
         } else {
             Button(
                 onClick = {
-                    if (password == passwordConfirm) {
-                        authViewModel.signUp(email, password)
-                    }
+                    authViewModel.signUp(
+                        email=email.trim(),
+                        password=password,
+                        fullName=fullName.trim(),
+                        studentNo = studentNumber.trim().ifEmpty { null })
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {

@@ -1,29 +1,36 @@
 package com.mustafaderinoz.libraryapp.data.repository
 
+import com.mustafaderinoz.libraryapp.data.supabase.supabase
+import io.github.jan.supabase.auth.OtpType
+import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.auth.providers.builtin.Email
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
 class AuthRepository
 {
     suspend fun signIn(email: String, password:String) : Result<Unit> = runCatching {
-        delay(1000) // dışarıya istek atıyomuş gibi
-
-        val isSuccess = Random.nextBoolean() // %50 %50
-        if(isSuccess)
-            Unit
-        else
-            throw Exception("Fake login failed")
+       supabase.auth.signInWith(Email){
+           this.email=email
+           this.password=password
+       }
     }
 
     //Sign up fonksiyonu
-    suspend fun signUp(email: String, password: String) : Result<Unit> = runCatching {
-        delay(2000)
+    suspend fun signUp(
+        email: String,
+        password: String,
+        fullName: String,
+        studentNo: String?
+    ) : Result<Unit> = runCatching {
+        supabase.auth.signUpWith(Email){
+            this.email = email
+            this.password = password
+        }
 
-        val isSuccess = Random.nextBoolean()
+        val userId = supabase.auth.currentUserOrNull()?.id ?: error("Kullanıcı bulunamadı")
+        println(userId)
 
-        if(isSuccess)
-            Unit
-        else
-            throw Exception("Bir sorun oluştu.")
     }
+
 }

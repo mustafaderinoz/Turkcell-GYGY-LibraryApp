@@ -33,11 +33,16 @@ class AuthViewModel :ViewModel(){
         }
     }
     // ✅ Yeni eklendi
-    fun signUp(email: String, password: String) {
+    fun signUp(
+        email: String,
+        password: String,
+        fullName:String,
+        studentNo:String?
+        ) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
             repository
-                .signUp(email, password)
+                .signUp(email, password,fullName,studentNo)
                 .onSuccess { _authState.value = AuthState.Success("student") }
                 .onFailure { ex -> _authState.value = AuthState.Error(ex.message ?: "Kayıt başarısız") }
         }
