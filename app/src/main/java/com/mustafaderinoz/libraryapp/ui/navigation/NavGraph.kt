@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.mustafaderinoz.libraryapp.ui.screen.HomeScreen
 import com.mustafaderinoz.libraryapp.ui.screen.LoginScreen
 import com.mustafaderinoz.libraryapp.ui.screen.RegisterScreen
 import com.mustafaderinoz.libraryapp.ui.viewmodel.AuthViewModel
@@ -20,19 +21,28 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
         composable(Screen.Login.route) {
             LoginScreen(
                 authViewModel = authViewModel,
-                onNavigateToRegister = {
-                    navController.navigate(Screen.Register.route)
+                onNavigateToRegister = { navController.navigate(Screen.Register.route) },
+                onLoginSuccess ={role->
+                    navController.navigate(Screen.Homepage.route){
+                        popUpTo(Screen.Login.route){inclusive=true}
+                    }
+                }
+            )
+        }
+        composable(Screen.Register.route) {
+            RegisterScreen(
+                authViewModel = authViewModel,
+                onNavigateToLogin = { navController.popBackStack() },
+                onRegisterScreen ={role->
+                    navController.navigate(Screen.Homepage.route){
+                        popUpTo(Screen.Login.route){inclusive=true}
+                    }
                 }
             )
         }
 
-        composable(Screen.Register.route) {
-            RegisterScreen(
-                authViewModel = authViewModel,
-                onNavigateToLogin = {
-                    navController.popBackStack()
-                }
-            )
+        composable(Screen.Homepage.route) {
+            HomeScreen(authViewModel)
         }
     }
 }

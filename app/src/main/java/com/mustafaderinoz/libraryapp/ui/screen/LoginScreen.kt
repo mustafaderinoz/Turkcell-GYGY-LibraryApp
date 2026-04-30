@@ -16,6 +16,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,13 +35,22 @@ import io.ktor.http.parseAndSortHeader
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel,
+    onLoginSuccess: (role:String) -> Unit,
     onNavigateToRegister: () -> Unit
 ){
 
     val authState by authViewModel.authState.collectAsState()
-
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
+    // Yalnızca authState değişirse çalış, tüm recompositionlarda değil..
+    LaunchedEffect(authState) {
+        if(authState is AuthState.Success)
+        {
+            onLoginSuccess((authState as AuthState.Success).role)
+            authViewModel.resetState()
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()

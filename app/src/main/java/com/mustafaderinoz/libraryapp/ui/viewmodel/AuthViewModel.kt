@@ -2,6 +2,7 @@ package com.mustafaderinoz.libraryapp.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mustafaderinoz.libraryapp.data.model.Profile
 import com.mustafaderinoz.libraryapp.data.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,9 +19,10 @@ sealed class AuthState {
 
 class AuthViewModel :ViewModel(){
     private val repository = AuthRepository()
-
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
     val authState: StateFlow<AuthState> = _authState;
+    private val _profile=MutableStateFlow<Profile?>(null)
+    val profile:StateFlow<Profile?> =_profile
 
     fun signIn(email: String, password: String)
     {
@@ -28,7 +30,16 @@ class AuthViewModel :ViewModel(){
             _authState.value = AuthState.Loading
             repository
                 .signIn(email, password)
-                .onSuccess { result -> _authState.value = AuthState.Success("student") }
+                .onSuccess {
+                    _authState.value = AuthState.Success("student")
+                    val userId=repository.getCurrentUserId()
+                    if(userId!=null){
+                        val profile=repository.getProfile(userId)
+                        _profile.value=profile
+                    }else{
+                        _authState.value=AuthState.Error("Profil Bulunamadı")
+                    }
+                }
                 .onFailure { ex -> _authState.value = AuthState.Error(ex.message ?: "Giriş başarısız") }
         }
     }
@@ -43,7 +54,16 @@ class AuthViewModel :ViewModel(){
             _authState.value = AuthState.Loading
             repository
                 .signUp(email, password,fullName,studentNo)
-                .onSuccess { _authState.value = AuthState.Success("student") }
+                .onSuccess {
+                    _authState.value = AuthState.Success("student")
+                    val userId=repository.getCurrentUserId()
+                    if(userId!=null){
+                        val profile=repository.getProfile(userId)
+                        _profile.value=profile
+                    }else{
+                        _authState.value=AuthState.Error("Profil Bulunamadı")
+                    }
+                }
                 .onFailure { ex -> _authState.value = AuthState.Error(ex.message ?: "Kayıt başarısız") }
         }
     }
