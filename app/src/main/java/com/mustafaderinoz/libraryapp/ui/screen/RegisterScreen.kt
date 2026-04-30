@@ -34,7 +34,7 @@ import com.mustafaderinoz.libraryapp.ui.viewmodel.AuthViewModel
 fun RegisterScreen(
     authViewModel: AuthViewModel,
     onNavigateToLogin: () -> Unit,
-    onRegisterScreen:(role:String) -> Unit
+    onRegisterSuccess:(role:String) -> Unit
 ) {
     val authState by authViewModel.authState.collectAsState()
 
@@ -47,7 +47,7 @@ fun RegisterScreen(
     LaunchedEffect(authState) {
         if(authState is AuthState.Success)
         {
-            onRegisterScreen((authState as AuthState.Success).role)
+            onRegisterSuccess((authState as AuthState.Success).role)
             authViewModel.resetState()
         }
     }

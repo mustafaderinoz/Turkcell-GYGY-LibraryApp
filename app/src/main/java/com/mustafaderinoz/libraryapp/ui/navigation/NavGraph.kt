@@ -33,7 +33,7 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
             RegisterScreen(
                 authViewModel = authViewModel,
                 onNavigateToLogin = { navController.popBackStack() },
-                onRegisterScreen ={role->
+                onRegisterSuccess ={role->
                     navController.navigate(Screen.Homepage.route){
                         popUpTo(Screen.Login.route){inclusive=true}
                     }
