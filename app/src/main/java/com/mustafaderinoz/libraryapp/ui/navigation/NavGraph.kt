@@ -10,11 +10,13 @@ import com.mustafaderinoz.libraryapp.ui.screen.HomeScreen
 import com.mustafaderinoz.libraryapp.ui.screen.LoginScreen
 import com.mustafaderinoz.libraryapp.ui.screen.RegisterScreen
 import com.mustafaderinoz.libraryapp.ui.viewmodel.AuthViewModel
+import com.mustafaderinoz.libraryapp.ui.viewmodel.BookViewModel
 
 @Composable
 fun NavGraph(navController: NavHostController = rememberNavController()) {
 
     val authViewModel: AuthViewModel = viewModel()
+    val bookViewModel: BookViewModel= viewModel()
 
     NavHost(navController = navController, startDestination = Screen.Login.route) {
 
@@ -42,7 +44,7 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
         }
 
         composable(Screen.Homepage.route) {
-            HomeScreen(authViewModel)
+            HomeScreen(authViewModel,bookViewModel)
         }
     }
 }
