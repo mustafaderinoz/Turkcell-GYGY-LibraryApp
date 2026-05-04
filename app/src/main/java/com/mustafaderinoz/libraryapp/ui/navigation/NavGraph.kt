@@ -1,5 +1,6 @@
 package com.mustafaderinoz.libraryapp.ui.navigation
 
+import android.window.SplashScreen
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -9,6 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import com.mustafaderinoz.libraryapp.ui.screen.HomeScreen
 import com.mustafaderinoz.libraryapp.ui.screen.LoginScreen
 import com.mustafaderinoz.libraryapp.ui.screen.RegisterScreen
+import com.mustafaderinoz.libraryapp.ui.screen.SplashScreen
 import com.mustafaderinoz.libraryapp.ui.viewmodel.AuthViewModel
 import com.mustafaderinoz.libraryapp.ui.viewmodel.BookViewModel
 
@@ -18,8 +20,21 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
     val authViewModel: AuthViewModel = viewModel()
     val bookViewModel: BookViewModel= viewModel()
 
-    NavHost(navController = navController, startDestination = Screen.Login.route) {
+    NavHost(navController = navController, startDestination = Screen.Splash.route) {
+        composable(Screen.Splash.route){
+            SplashScreen(authViewModel,
+            onAuthenticated = { role->
+                navController.navigate(Screen.Homepage.route){
+                    popUpTo(Screen.Splash.route){inclusive=true}
+                }
+            },
+                onUnauthenticated = {
+                     navController.navigate(Screen.Login.route){
+                         popUpTo(Screen.Splash.route){inclusive=true}
+                     }
+                })
 
+        }
         composable(Screen.Login.route) {
             LoginScreen(
                 authViewModel = authViewModel,
@@ -42,7 +57,6 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
                 }
             )
         }
-
         composable(Screen.Homepage.route) {
             HomeScreen(authViewModel,bookViewModel)
         }
