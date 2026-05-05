@@ -32,14 +32,14 @@ class BookViewModel:ViewModel() {
             _isLoading.value = true
             repository
                 .getAllBooks()
-                .onSuccess { _books.value = it }
+                .onSuccess { books->_books.value = books.sortedBy { it.avaiableCopies } }
                 .onFailure { _error.value = it.message }
             _isLoading.value = false
         }
     }
     fun onSearchQueryChange(newQuery: String) {
         _searchQuery.value = newQuery
-        if (newQuery.length >= 1) { // 1 karakterden sonra aramaya başla
+        if (newQuery.isNotEmpty()) {
             searchBooks(newQuery)
         } else if (newQuery.isEmpty()) {
             loadBooks() // Arama temizlenince tüm listeyi getir

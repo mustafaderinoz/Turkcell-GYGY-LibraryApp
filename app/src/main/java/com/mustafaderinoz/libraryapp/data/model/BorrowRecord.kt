@@ -3,7 +3,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class BorrowRecord(
-    val id: String,
+    val id: String="",
     @SerialName("student_id") val studentId: String,
     @SerialName("book_id") val bookId: String,
     @SerialName("borrowed_at") val borrowedAt: String = "", // Date?
