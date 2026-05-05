@@ -104,7 +104,7 @@ fun MyBorrowsScreen(
                 contentPadding = PaddingValues(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 32.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-                items(borrows, key = { it.id }) { record ->
+                items(borrows) { record ->
                     val book = bookMap[record.bookId]
                     BorrowCard(
                         record = record,

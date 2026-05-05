@@ -35,9 +35,7 @@ class BorrowViewModel : ViewModel() {
                 .onSuccess { records ->
                     // Aktif olanları en üste almak için listeyi sıralıyoruz
                     val sortedRecords = records.sortedWith(
-                        // 1. Kriter: returnedAt null ise (aktifse) en üste koy (false < true mantığıyla çalışır)
                         compareBy<BorrowRecord> { it.returnedAt != null }
-                            // 2. Kriter (Opsiyonel ama önerilir): Kendi aralarında en son kiralananı en üste koy
                             .thenByDescending { it.borrowedAt }
                     )
 
@@ -78,6 +76,7 @@ class BorrowViewModel : ViewModel() {
                 }
         }
     }
+
 
     fun resetState() {
         _borrowState.value = BorrowState.Idle

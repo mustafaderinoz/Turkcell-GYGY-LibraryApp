@@ -27,16 +27,23 @@ class BookViewModel:ViewModel() {
         loadBooks()
     }
 
-    fun loadBooks() {
+    fun loadBooks(showLoadingIndicator: Boolean = true) {
         viewModelScope.launch {
-            _isLoading.value = true
+            // Sadece ilk açılışta veya bilerek istendiğinde yükleme animasyonu göster
+            if (showLoadingIndicator) {
+                _isLoading.value = true
+            }
+
             repository
                 .getAllBooks()
                 .onSuccess { books->_books.value = books.sortedBy { it.avaiableCopies } }
                 .onFailure { _error.value = it.message }
             _isLoading.value = false
+
+
         }
     }
+
     fun onSearchQueryChange(newQuery: String) {
         _searchQuery.value = newQuery
         if (newQuery.isNotEmpty()) {

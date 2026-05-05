@@ -27,11 +27,6 @@ fun BorrowCard(
 ) {
     val isActive = record.returnedAt == null
 
-    // Tarihleri düzenli göster (ISO string'i kırp)
-    fun formatDate(raw: String): String {
-        return raw.take(10) // "2025-05-01" formatına indir
-    }
-
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
@@ -65,7 +60,6 @@ fun BorrowCard(
                     )
                 }
 
-                // Aktif / İade Edildi etiketi (Hap Şeklinde - Pill Shape)
                 Surface(
                     shape = RoundedCornerShape(percent = 50),
                     color = if (isActive) Color(0xFFDCFCE7) else Color(0xFFF3F4F6),
@@ -90,10 +84,10 @@ fun BorrowCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                DateInfoColumn(label = "Alış Tarihi", value = formatDate(record.borrowedAt))
-                DateInfoColumn(label = "Teslim Tarihi", value = formatDate(record.dueDate))
+                DateInfoColumn(label = "Alış Tarihi", value = record.borrowedAt.take(10))
+                DateInfoColumn(label = "Teslim Tarihi", value = record.dueDate.take(10))
                 if (!isActive && record.returnedAt != null) {
-                    DateInfoColumn(label = "İade Tarihi", value = formatDate(record.returnedAt))
+                    DateInfoColumn(label = "İade Tarihi", value = record.returnedAt.take(10))
                 }
             }
 

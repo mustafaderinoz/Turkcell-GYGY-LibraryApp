@@ -53,7 +53,8 @@ fun HomeScreen(
             is BorrowState.Success -> {
                 snackbarMessage = "Kitap başarıyla ödünç alındı!"
                 borrowViewModel.resetState()
-                bookViewModel.loadBooks()
+                // Ekranı "Loading" state'ine sokmadan arka planda listeyi güncelle
+                bookViewModel.loadBooks(showLoadingIndicator = false)
             }
             is BorrowState.Error -> {
                 snackbarMessage = (borrowState as BorrowState.Error).message
