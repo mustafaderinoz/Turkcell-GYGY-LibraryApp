@@ -15,16 +15,26 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -44,39 +54,141 @@ import com.mustafaderinoz.libraryapp.ui.viewmodel.BookViewModel
 @Composable
 fun HomeScreen(
     authViewModel: AuthViewModel,
-    bookViewModel: BookViewModel
+    bookViewModel: BookViewModel,
+    onLogout: () -> Unit // Yeni eklendi
 ) {
     val profileState by authViewModel.profile.collectAsState()
     val books by bookViewModel.books.collectAsState()
     val isLoading by bookViewModel.isLoading.collectAsState()
+    val searchQuery by bookViewModel.searchQuery.collectAsState()
 
-    Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-        // Text(profileState?.fullName?:"Profil Bulunamadı")
-        when {
-            isLoading -> CircularProgressIndicator(
-                modifier = Modifier.size(20.dp),
-                strokeWidth = 2.dp,
-                color = MaterialTheme.colorScheme.onPrimary
-            )
+    Column(
+        modifier = Modifier.fillMaxSize()
+            .fillMaxSize()
+            .statusBarsPadding()
+    ) {
 
-            books.isEmpty() -> Text("Kitaplar yüklenemedi.")
-            else -> LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(32.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 24.dp, end = 16.dp, top = 24.dp, bottom = 20.dp), // Boşluklar artırıldı
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Column {
+                Text(
+                    text = "Hoş geldin 👋",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant, // Biraz daha sönük renk
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = profileState?.fullName ?: "Kitapsever",
+                    style = MaterialTheme.typography.headlineSmall, // Daha büyük font
+                    fontWeight = FontWeight.ExtraBold, // Çok kalın yazı tipi
+                    color = MaterialTheme.colorScheme.primary // Uygulamanın ana rengi
+                )
+            }
+
+// BUTON GRUBU
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp) // Butonlar arası boşluk
             ) {
-                items(books, key = { it.id })
-                {
-                    // ÖDEV 3: Bir "Kitap" kart tasarımı (ayrı composable) buradaki listede
-                    // doldurulsun.
-                    book->BookCard(book = book)
+                // YENİ KİTAP İKONU BUTONU
+                Surface(
+                    onClick = { /* Buraya kitapla ilgili bir işlem veya navigasyon gelebilir */ },
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f), // Mavi/Mor tonu
+                    modifier = Modifier.size(44.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "Kitaplarım",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
+                }
 
+                // ÇIKIŞ BUTONU (Mevcut buton)
+                Surface(
+                    onClick = {
+                        authViewModel.signOut()
+                        onLogout()
+                    },
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.4f),
+                    modifier = Modifier.size(44.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = Icons.Default.ExitToApp,
+                            contentDescription = "Çıkış Yap",
+                            tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 }
             }
         }
 
-    }
+        OutlinedTextField(
+            value =searchQuery,
+            onValueChange = {
+                bookViewModel.onSearchQueryChange(it)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+            placeholder = {
+                Text("Kitap veya yazar ara")
+            },
+            singleLine = true,
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Ara"
+                )
+            },
+            shape = RoundedCornerShape(14.dp)
+        )
 
+        Spacer(modifier = Modifier.height(12.dp))
+
+        HorizontalDivider()
+
+
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+
+            when {
+                isLoading -> CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                books.isEmpty() -> Text("Kitaplar yüklenemedi.")
+
+                else -> LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+
+                    items(books, key = { it.id }) { book ->
+                        BookCard(book = book)
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable

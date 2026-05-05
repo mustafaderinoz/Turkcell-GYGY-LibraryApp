@@ -58,7 +58,16 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
             )
         }
         composable(Screen.Homepage.route) {
-            HomeScreen(authViewModel,bookViewModel)
+            HomeScreen(
+                authViewModel=authViewModel,
+                bookViewModel=bookViewModel,
+                onLogout = {
+                    navController.navigate(Screen.Login.route) {
+                        // Ana sayfayı ve arkasındaki her şeyi temizle ki geri tuşuyla dönülmesin
+                        popUpTo(Screen.Homepage.route) { inclusive = true }
+                    }
+                }
+            )
         }
     }
 }

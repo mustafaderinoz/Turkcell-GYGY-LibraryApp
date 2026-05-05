@@ -20,6 +20,9 @@ class BookViewModel:ViewModel() {
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery
+
     init {
         loadBooks()
     }
@@ -34,4 +37,28 @@ class BookViewModel:ViewModel() {
             _isLoading.value = false
         }
     }
+    fun onSearchQueryChange(newQuery: String) {
+        _searchQuery.value = newQuery
+        if (newQuery.length >= 1) { // 1 karakterden sonra aramaya başla
+            searchBooks(newQuery)
+        } else if (newQuery.isEmpty()) {
+            loadBooks() // Arama temizlenince tüm listeyi getir
+        }
+    }
+
+    fun searchBooks(query: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            repository.searchBooks(query)
+                .onSuccess {
+                    _books.value = it
+                    _error.value = null
+                }
+                .onFailure {
+                    _error.value = it.message ?: "Arama başarısız"
+                }
+            _isLoading.value = false
+        }
+    }
+
 }

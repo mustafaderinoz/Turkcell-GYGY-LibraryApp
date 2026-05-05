@@ -11,9 +11,9 @@ class BookRepository {
             .decodeList<Book>()
     }
 
-    suspend fun getBookById(id:String): Result<Book> = runCatching {
+    suspend fun getBookById(id: String): Result<Book> = runCatching {
         supabase.postgrest["books"]
-            .select { filter { eq("id",id) } }
+            .select { filter { eq("id", id) } }
             .decodeSingle<Book>()
     }
 
@@ -21,7 +21,7 @@ class BookRepository {
         supabase.postgrest["books"].insert(book)
     }
 
-     //Belirtilen ID'ye sahip kitabı günceller.
+    //Belirtilen ID'ye sahip kitabı günceller.
     suspend fun updateBook(id: String, updatedBook: Book): Result<Unit> = runCatching {
         supabase.postgrest["books"].update(updatedBook) {
             filter {
@@ -31,7 +31,7 @@ class BookRepository {
     }
 
 
-     //Belirtilen ID'ye sahip kitabı veritabanından siler.
+    //Belirtilen ID'ye sahip kitabı veritabanından siler.
     suspend fun deleteBook(id: String): Result<Unit> = runCatching {
         supabase.postgrest["books"].delete {
             filter {
@@ -41,17 +41,18 @@ class BookRepository {
     }
 
 
-    // Kitap adı içerisinde arama yapar (Case-insensitive / Büyük-küçük harf duyarsız).
     suspend fun searchBooks(query: String): Result<List<Book>> = runCatching {
         supabase.postgrest["books"]
             .select {
                 filter {
-                    // "title" sütununda query değerini arar.
-                    // ilike kullanımı büyük/küçük harf farkını ortadan kaldırır.
-                    ilike("title", "%$query%")
+                    or {
+                        ilike("title", "%$query%")
+                        ilike("author", "%$query%")
+                    }
                 }
             }
             .decodeList<Book>()
     }
+
 
 }
